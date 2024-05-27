@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -9,10 +10,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(session({ secret: 'your-secret-key', resave: false, saveUninitialized: true }));
 
-// Replace 'yourdbname' with the name of your MongoDB database
-const mongoURI = 'mongodb+srv://2220:0222@cluster0.wymfyno.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// Use the environment variable for MongoDB connection URI
+const mongoURI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to MongoDB Atlas');
   })
@@ -22,7 +23,7 @@ mongoose.connect(mongoURI)
 
 app.use('/api', authRoutes);
 
-app.use(express.static('../client'));
+app.use(express.static('/client'));
 
 app.get('/dashboard', (req, res) => {
     if (req.session.user) {
